@@ -3,10 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <title>مدير الفيديوهات</title>
 
-  <!-- أيقونة التبويب -->
   <link rel="icon" type="image/png" href="../assets/app_icon.png" />
   <link rel="apple-touch-icon" href="../assets/app_icon.png" />
 
@@ -22,7 +20,6 @@
       --shadow: 0 18px 50px rgba(0,0,0,.35);
       --radius:18px;
     }
-
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -33,14 +30,8 @@
       font-family:system-ui,Segoe UI,Tahoma,Arial;
       line-height:1.7;
     }
-
     .wrap{max-width:980px;margin:34px auto;padding:0 16px}
-
-    .header{
-      display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
-      margin-bottom:18px;
-    }
-
+    .header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;}
     .brand{display:flex;align-items:center;gap:14px}
     .logo{
       width:56px;height:56px;border-radius:16px;
@@ -52,7 +43,6 @@
       flex:0 0 auto;
     }
     .logo img{width:100%;height:100%;object-fit:cover}
-
     h1{margin:0;font-size:26px;letter-spacing:.2px}
     .sub{color:var(--muted);max-width:620px;font-size:14.5px;margin-top:4px}
 
@@ -105,7 +95,6 @@
       font-weight:700;
     }
     a.btn.primary:hover{background:#f8fafc}
-
     a.btn.ghost{background:transparent}
 
     .ico{width:18px;height:18px;display:inline-flex}
@@ -150,22 +139,10 @@
     .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .right a.btn{padding:10px 12px;border-radius:12px}
 
-    .device-info{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-top:8px;
-    }
-    .device-row{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .device-row .ua{
-      word-break:break-word;
-    }
+    .device-info{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+    .device-row{display:flex;align-items:center;gap:10px;}
+    .device-row .ua{word-break:break-word;}
 
-    /* ✅ شارة عدد التنزيلات بجانب كل نسخة */
     .dl-badge{
       display:inline-flex;
       align-items:center;
@@ -179,25 +156,9 @@
       white-space:nowrap;
     }
 
-    /* ✅ إصدار + إجمالي التنزيلات داخل نفس مربع الإصدار */
-    .release-wrap{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .release-left{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .release-right{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
+    .release-wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+    .release-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .release-right{display:flex;align-items:center;gap:8px;}
     .badge-soft{
       display:inline-flex;
       align-items:center;
@@ -211,23 +172,14 @@
       white-space:nowrap;
     }
     .badge-soft .muted{ color:var(--muted); }
-    .badge-soft .num{
-      font-weight:800;
-      letter-spacing:.2px;
-      color:var(--text);
-    }
+    .badge-soft .num{font-weight:800;letter-spacing:.2px;color:var(--text);}
     .badge-soft .mini-dot{
       width:8px;height:8px;border-radius:999px;
       background:rgba(34,197,94,.95);
       box-shadow:0 0 0 4px rgba(34,197,94,.18);
     }
 
-    footer{
-      margin:18px 0 8px;
-      color:var(--muted);
-      font-size:12.5px;
-      text-align:center;
-    }
+    footer{margin:18px 0 8px;color:var(--muted);font-size:12.5px;text-align:center;}
   </style>
 </head>
 
@@ -241,10 +193,9 @@
         <div>
           <h1>مدير الفيديوهات</h1>
           <div class="sub">
-            صفحة رسمية لتنزيل آخر إصدار. زر ذكي يرشّح النسخة المناسبة لجهازك، مع روابط مباشرة لكل المعماريات.
+            انسخ رابط الفيديو/الشورتس/قائمة التشغيل، اختر الجودة، ثم حمّل فيديو أو اثنين بالتوازي لتوفير الوقت.
           </div>
 
-          <!-- زر رجوع للمعرض -->
           <div class="actions" style="margin-top:10px">
             <a class="btn ghost" href="https://abood202.github.io/my-app-site/">رجوع للمعرض</a>
           </div>
@@ -260,20 +211,17 @@
     <div class="grid">
       <section class="card" aria-label="تنزيل">
         <h2>آخر إصدار</h2>
-        <p>
-          اضغط على <b>التنزيل الذكي</b> وسيتم ترشيح النسخة الأقرب لجهازك. إذا لم ينجح الكشف، استخدم الروابط اليدوية.
-        </p>
+        <p>اضغط على <b>التنزيل الذكي</b> وسيتم ترشيح النسخة الأقرب لجهازك. إذا لم ينجح الكشف، استخدم الروابط اليدوية.</p>
 
-        <!-- ✅ مربع الإصدار + إجمالي التنزيلات -->
         <div class="status" id="releaseInfo" style="margin-top:10px">
           <div class="release-wrap">
             <div class="release-left">
               <span class="muted">الإصدار:</span>
-              <b id="relTag">جارٍ جلب آخر إصدار…</b>
+              <b id="relTag">—</b>
             </div>
 
             <div class="release-right">
-              <span class="badge-soft" title="إجمالي تنزيلات ملفات APK داخل آخر Release">
+              <span class="badge-soft" title="إجمالي تنزيلات ملفات APK">
                 <span class="mini-dot" aria-hidden="true"></span>
                 <span class="muted">إجمالي التنزيلات</span>
                 <span class="num" id="totalDownloads">—</span>
@@ -325,10 +273,7 @@
               <div class="meta">Android 64-bit (ARM)</div>
             </div>
             <div class="right">
-              <span class="dl-badge" title="تنزيلات هذه النسخة">
-                <span class="muted">تنزيلات:</span>
-                <b id="dlArm64">—</b>
-              </span>
+              <span class="dl-badge" title="تنزيلات هذه النسخة"><span class="muted">تنزيلات:</span><b id="dlArm64">—</b></span>
               <a class="btn" id="btnArm64" href="#">تنزيل</a>
             </div>
           </li>
@@ -339,10 +284,7 @@
               <div class="meta">Android 32-bit (ARM)</div>
             </div>
             <div class="right">
-              <span class="dl-badge" title="تنزيلات هذه النسخة">
-                <span class="muted">تنزيلات:</span>
-                <b id="dlV7a">—</b>
-              </span>
+              <span class="dl-badge" title="تنزيلات هذه النسخة"><span class="muted">تنزيلات:</span><b id="dlV7a">—</b></span>
               <a class="btn" id="btnV7a" href="#">تنزيل</a>
             </div>
           </li>
@@ -353,10 +295,7 @@
               <div class="meta">Android Emulator / Intel</div>
             </div>
             <div class="right">
-              <span class="dl-badge" title="تنزيلات هذه النسخة">
-                <span class="muted">تنزيلات:</span>
-                <b id="dlX86">—</b>
-              </span>
+              <span class="dl-badge" title="تنزيلات هذه النسخة"><span class="muted">تنزيلات:</span><b id="dlX86">—</b></span>
               <a class="btn" id="btnX86" href="#">تنزيل</a>
             </div>
           </li>
@@ -365,21 +304,10 @@
 
       <aside class="card" aria-label="الدعم والملاحظات">
         <h2>اقتراحات وملاحظات</h2>
-        <p>
-          لديك اقتراح أو واجهت مشكلة؟ استخدم صفحة الـ Issues وسيصلني تقريرك بشكل منظم.
-        </p>
+        <p>لديك اقتراح أو واجهت مشكلة؟ استخدم صفحة الـ Issues وسيصلني تقريرك بشكل منظم.</p>
 
         <div class="actions">
-          <a class="btn" href="https://github.com/abood202/my-app-site/issues">
-            <span class="ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 22s8-4 8-10V6l-8-4-8 4v6c0 6 8 10 8 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                <path d="M12 11v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <path d="M12 8h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-              </svg>
-            </span>
-            فتح صفحة Issues
-          </a>
+          <a class="btn" href="https://github.com/abood202/my-app-site/issues">فتح صفحة Issues</a>
         </div>
 
         <div class="note">
@@ -399,10 +327,7 @@
   </div>
 
   <script>
-    // ✅ إعدادات GitHub Repo لجلب أرقام التنزيلات + روابط آخر Release
-    const GH = { owner: "abood202", repo: "my-app-site" };
-
-    // ✅ روابط احتياطية (تُستخدم لو فشل GitHub API)
+    // روابط احتياطية (تعمل دائمًا)
     const APK = {
       arm64:  "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-arm64-v8a-release.apk",
       v7a:    "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-armeabi-v7a-release.apk",
@@ -415,9 +340,7 @@
     function uaLower(){ return ua().toLowerCase(); }
 
     function platformGuess(){
-      if (navigator.userAgentData && navigator.userAgentData.platform) {
-        return String(navigator.userAgentData.platform);
-      }
+      if (navigator.userAgentData && navigator.userAgentData.platform) return String(navigator.userAgentData.platform);
       if (uaLower().includes("android")) return "Android";
       if (uaLower().includes("iphone") || uaLower().includes("ipad") || uaLower().includes("ios")) return "iOS";
       if (uaLower().includes("windows")) return "Windows";
@@ -431,7 +354,6 @@
       return p.includes("android") || uaLower().includes("android");
     }
 
-    // ترشيح ABI اعتماداً على UA (ليس 100% مؤكد)
     function guessAbi(){
       const u = uaLower();
       if (u.includes("x86_64") || (u.includes("x86") && !u.includes("arm")) || u.includes("intel")) return "x86_64";
@@ -450,7 +372,6 @@
     function setEnvPill(){
       const platform = platformGuess();
       const android = isAndroid();
-
       el("envDot").style.background = android ? "rgba(34,197,94,.95)" : "rgba(239,68,68,.95)";
       el("envDot").style.boxShadow  = android ? "0 0 0 4px rgba(34,197,94,.18)" : "0 0 0 4px rgba(239,68,68,.16)";
       el("envText").textContent     = android ? `Android — جاهز للتنزيل` : `${platform} — ملفات APK لأندرويد فقط`;
@@ -463,25 +384,10 @@
 
       el("deviceInfo").innerHTML =
         `<div class="device-info">
-          <div class="device-row">
-            <span class="kbd">Platform</span>
-            <span>${platform}</span>
-          </div>
-
-          <div class="device-row">
-            <span class="kbd">Android</span>
-            <span>${android ? "Yes" : "No"}</span>
-          </div>
-
-          <div class="device-row">
-            <span class="kbd">ABI guess</span>
-            <span>${prettyAbi(abi)}</span>
-          </div>
-
-          <div class="device-row">
-            <span class="kbd">UA</span>
-            <span class="ua">${ua()}</span>
-          </div>
+          <div class="device-row"><span class="kbd">Platform</span><span>${platform}</span></div>
+          <div class="device-row"><span class="kbd">Android</span><span>${android ? "Yes" : "No"}</span></div>
+          <div class="device-row"><span class="kbd">ABI guess</span><span>${prettyAbi(abi)}</span></div>
+          <div class="device-row"><span class="kbd">UA</span><span class="ua">${ua()}</span></div>
         </div>`;
     }
 
@@ -493,81 +399,63 @@
 
     function setDownloadsUI(which, count){
       const n = Number(count) || 0;
-      if(which === "arm64") el("dlArm64").textContent = n.toLocaleString("ar-EG");
-      if(which === "v7a")   el("dlV7a").textContent   = n.toLocaleString("ar-EG");
-      if(which === "x86_64")el("dlX86").textContent   = n.toLocaleString("ar-EG");
+      const txt = n.toLocaleString("ar-EG");
+      if(which === "arm64") el("dlArm64").textContent = txt;
+      if(which === "v7a")   el("dlV7a").textContent   = txt;
+      if(which === "x86_64")el("dlX86").textContent   = txt;
     }
 
-    async function loadLatestRelease(){
+    async function loadStatsFromJson(){
+      // الملف الثابت الذي سيحدثه GitHub Actions داخل موقعك
+      // ضع هذا الملف في: /data/video-manager.json
+      const url = "../data/video-manager.json";
+
       try{
-        const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/releases/latest`;
-        const res = await fetch(url, { headers: { "Accept": "application/vnd.github+json" } });
-        if(!res.ok) throw new Error("GitHub API error");
+        const res = await fetch(url, { cache: "no-store" });
+        if(!res.ok) throw new Error("stats json not found");
 
         const data = await res.json();
 
-        // ✅ عرض التاغ
-        const tag = data.tag_name || "آخر إصدار";
-        el("relTag").textContent = tag;
+        el("relTag").textContent = data.tag || "—";
+        el("totalDownloads").textContent = (Number(data.total_apk_downloads)||0).toLocaleString("ar-EG");
 
-        const assets = Array.isArray(data.assets) ? data.assets : [];
+        const a = data.assets || {};
 
-        // ✅ إجمالي التنزيلات (مجموع download_count لكل Assets في آخر Release)
-        const total = assets.reduce((sum, a) => sum + (Number(a.download_count) || 0), 0);
-        el("totalDownloads").textContent = total.toLocaleString("ar-EG");
+        // حدّث الروابط + أعداد كل نسخة
+        const arm64Name = "app-arm64-v8a-release.apk";
+        const v7aName   = "app-armeabi-v7a-release.apk";
+        const x86Name   = "app-x86_64-release.apk";
 
-        // ابحث بالاسم داخل Assets
-        const findByName = (needle) =>
-          assets.find(a => (a.name || "").toLowerCase() === needle.toLowerCase());
+        if (a[arm64Name]?.url) APK.arm64 = a[arm64Name].url;
+        if (a[v7aName]?.url)   APK.v7a   = a[v7aName].url;
+        if (a[x86Name]?.url)   APK.x86_64= a[x86Name].url;
 
-        const aArm64 = findByName("app-arm64-v8a-release.apk");
-        const aV7a   = findByName("app-armeabi-v7a-release.apk");
-        const aX86   = findByName("app-x86_64-release.apk");
-
-        // لو وجدناها، نحدث الروابط + عدد التنزيلات لكل ملف
-        if (aArm64){
-          APK.arm64 = aArm64.browser_download_url;
-          setDownloadsUI("arm64", aArm64.download_count ?? 0);
-        }
-        if (aV7a){
-          APK.v7a = aV7a.browser_download_url;
-          setDownloadsUI("v7a", aV7a.download_count ?? 0);
-        }
-        if (aX86){
-          APK.x86_64 = aX86.browser_download_url;
-          setDownloadsUI("x86_64", aX86.download_count ?? 0);
-        }
+        setDownloadsUI("arm64", a[arm64Name]?.count ?? 0);
+        setDownloadsUI("v7a",   a[v7aName]?.count ?? 0);
+        setDownloadsUI("x86_64",a[x86Name]?.count ?? 0);
 
         bindLinks();
 
-        // تنبيه أنيق لو لم يجد بعض الملفات
-        const missing = [];
-        if(!aArm64) missing.push("arm64");
-        if(!aV7a)   missing.push("v7a");
-        if(!aX86)   missing.push("x86_64");
-
-        if(missing.length){
-          const note = el("relNote");
+        const note = el("relNote");
+        if (data.updated_at){
           note.style.display = "block";
-          note.textContent = `ملاحظة: لم أجد بعض ملفات APK في Assets (${missing.join(", ")}). تم استخدام روابط احتياطية.`;
+          note.textContent = `آخر تحديث للإحصائيات: ${new Date(data.updated_at).toLocaleString("ar-EG")}`;
         }
 
       }catch(e){
-        // فشل API: نستخدم روابط fallback ولا نكسر الصفحة
-        el("relTag").textContent = "غير متاح الآن";
+        // لو ملف الإحصائيات غير موجود بعد، لا نكسر الصفحة
+        el("relTag").textContent = "—";
         el("totalDownloads").textContent = "—";
+        bindLinks();
 
         const note = el("relNote");
         note.style.display = "block";
-        note.textContent = "تعذّر جلب بيانات GitHub الآن (تم استخدام روابط احتياطية).";
-
-        bindLinks();
+        note.textContent = "لم يتم العثور على ملف الإحصائيات بعد. تأكد أن GitHub Action يولّد data/video-manager.json.";
       }
     }
 
     function smartDownload(e){
       e.preventDefault();
-
       const status  = el("smartStatus");
       const android = isAndroid();
       const abi     = guessAbi();
@@ -586,11 +474,10 @@
     setEnvPill();
     fillDeviceInfo();
     bindLinks();
-
     el("smartBtn").addEventListener("click", smartDownload);
 
-    // ✅ جلب أحدث إصدار + عدد التنزيلات
-    loadLatestRelease();
+    // بدون API: اقرأ الإحصائيات من JSON ثابت
+    loadStatsFromJson();
   </script>
 </body>
 </html>
