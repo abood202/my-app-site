@@ -150,6 +150,18 @@
     .right{display:flex;align-items:center;gap:10px}
     .right a.btn{padding:10px 12px;border-radius:12px}
 
+    /* عدّاد التحميلات بجانب الأزرار */
+    .dl-pill{
+      padding:6px 10px;border-radius:999px;
+      background:rgba(2,6,23,.35);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--muted);
+      font-size:12.5px;
+      white-space:nowrap;
+      min-width:96px;
+      text-align:center;
+    }
+
     .device-info{
       display:flex;
       flex-direction:column;
@@ -185,6 +197,11 @@
           <h1>مدير الفيديوهات</h1>
           <div class="sub">
             صفحة رسمية لتنزيل آخر إصدار. زر ذكي يرشّح النسخة المناسبة لجهازك، مع روابط مباشرة لكل المعماريات.
+          </div>
+
+          <!-- معلومات الإصدار -->
+          <div class="status" id="releaseInfo" style="margin-top:10px">
+            <span class="muted">الإصدار:</span> جارٍ جلب آخر إصدار…
           </div>
 
           <!-- زر رجوع للمعرض -->
@@ -248,6 +265,7 @@
               <div class="meta">Android 64-bit (ARM)</div>
             </div>
             <div class="right">
+              <span class="dl-pill" id="dlArm64">— تنزيل</span>
               <a class="btn" id="btnArm64" href="#">تنزيل</a>
             </div>
           </li>
@@ -258,6 +276,7 @@
               <div class="meta">Android 32-bit (ARM)</div>
             </div>
             <div class="right">
+              <span class="dl-pill" id="dlV7a">— تنزيل</span>
               <a class="btn" id="btnV7a" href="#">تنزيل</a>
             </div>
           </li>
@@ -268,6 +287,7 @@
               <div class="meta">Android Emulator / Intel</div>
             </div>
             <div class="right">
+              <span class="dl-pill" id="dlX86">— تنزيل</span>
               <a class="btn" id="btnX86" href="#">تنزيل</a>
             </div>
           </li>
@@ -310,6 +330,10 @@
   </div>
 
   <script>
+    // إعدادات الريبو (عدّلها إذا غيّرت الحساب/الريبو)
+    const GH = { owner: "abood202", repo: "my-app-site" };
+
+    // (Fallback) لو فشل API لأي سبب
     const APK = {
       arm64:  "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-arm64-v8a-release.apk",
       v7a:    "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-armeabi-v7a-release.apk",
@@ -338,6 +362,7 @@
       return p.includes("android") || uaLower().includes("android");
     }
 
+    // ترشيح ABI اعتماداً على UA (ليس 100% مؤكد)
     function guessAbi(){
       const u = uaLower();
       if (u.includes("x86_64") || (u.includes("x86") && !u.includes("arm")) || u.includes("intel")) return "x86_64";
@@ -391,6 +416,12 @@
         </div>`;
     }
 
+    function bindLinks(){
+      el("btnArm64").href = APK.arm64;
+      el("btnV7a").href   = APK.v7a;
+      el("btnX86").href   = APK.x86_64;
+    }
+
     function smartDownload(e){
       e.preventDefault();
 
@@ -408,15 +439,81 @@
       window.location.href = APK[pick];
     }
 
+    function setDownloadsUI(which, count){
+      const idMap = { arm64:"dlArm64", v7a:"dlV7a", x86_64:"dlX86" };
+      const node = el(idMap[which]);
+      if (!node) return;
+      node.textContent = `${count} تنزيل`;
+    }
+
+    // يجلب آخر Release ويحدّث:
+    // - رقم الإصدار
+    // - روابط الـ APK تلقائياً
+    // - عدّاد التنزيلات لكل Asset
+    async function loadLatestRelease(){
+      try{
+        const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/releases/latest`;
+        const res = await fetch(url, { headers: { "Accept": "application/vnd.github+json" } });
+        if(!res.ok) throw new Error("GitHub API error");
+
+        const data = await res.json();
+        const tag = data.tag_name || "آخر إصدار";
+        el("releaseInfo").innerHTML = `<span class="muted">الإصدار:</span> <b>${tag}</b>`;
+
+        const assets = Array.isArray(data.assets) ? data.assets : [];
+
+        // ابحث بالاسم داخل Assets (عدّل الأسماء هنا لو تغيّرت)
+        const findByName = (needle) =>
+          assets.find(a => (a.name || "").toLowerCase() === needle.toLowerCase());
+
+        const aArm64 = findByName("app-arm64-v8a-release.apk");
+        const aV7a   = findByName("app-armeabi-v7a-release.apk");
+        const aX86   = findByName("app-x86_64-release.apk");
+
+        // لو وجدناها، نحدث الروابط والعدادات من نفس الـ Release
+        if (aArm64){
+          APK.arm64 = aArm64.browser_download_url;
+          setDownloadsUI("arm64", aArm64.download_count ?? 0);
+        }
+        if (aV7a){
+          APK.v7a = aV7a.browser_download_url;
+          setDownloadsUI("v7a", aV7a.download_count ?? 0);
+        }
+        if (aX86){
+          APK.x86_64 = aX86.browser_download_url;
+          setDownloadsUI("x86_64", aX86.download_count ?? 0);
+        }
+
+        bindLinks();
+
+        // لو لم نجد بعض الملفات، نكتب تنبيه بسيط
+        const missing = [];
+        if(!aArm64) missing.push("arm64");
+        if(!aV7a)   missing.push("v7a");
+        if(!aX86)   missing.push("x86_64");
+        if(missing.length){
+          el("releaseInfo").innerHTML +=
+            `<div class="muted small" style="margin-top:6px">
+              ملاحظة: لم أجد بعض الملفات داخل Assets (${missing.join(", ")}). تم استخدام روابط احتياطية.
+            </div>`;
+        }
+
+      }catch(e){
+        // فشل API: نستخدم روابط fallback ولا نكسر الصفحة
+        el("releaseInfo").innerHTML = `<span class="muted">الإصدار:</span> لم يتم جلب بيانات GitHub الآن (تم استخدام روابط احتياطية).`;
+        bindLinks();
+      }
+    }
+
+    // تشغيل
     setEnvPill();
     fillDeviceInfo();
+    bindLinks();
 
     el("smartBtn").addEventListener("click", smartDownload);
 
-    el("btnArm64").href = APK.arm64;
-    el("btnV7a").href   = APK.v7a;
-    el("btnX86").href   = APK.x86_64;
+    // تحميل بيانات آخر Release/التحميلات
+    loadLatestRelease();
   </script>
 </body>
 </html>
-
