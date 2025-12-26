@@ -147,20 +147,8 @@
     .title{font-weight:700}
     .meta{color:var(--muted);font-size:12.5px;margin-top:2px}
 
-    .right{display:flex;align-items:center;gap:10px}
+    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .right a.btn{padding:10px 12px;border-radius:12px}
-
-    /* عدّاد التحميلات بجانب الأزرار */
-    .dl-pill{
-      padding:6px 10px;border-radius:999px;
-      background:rgba(2,6,23,.35);
-      border:1px solid rgba(255,255,255,.10);
-      color:var(--muted);
-      font-size:12.5px;
-      white-space:nowrap;
-      min-width:96px;
-      text-align:center;
-    }
 
     .device-info{
       display:flex;
@@ -175,6 +163,63 @@
     }
     .device-row .ua{
       word-break:break-word;
+    }
+
+    /* ✅ شارة عدد التنزيلات بجانب كل نسخة */
+    .dl-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+      font-size:12.5px;
+      white-space:nowrap;
+    }
+
+    /* ✅ إصدار + إجمالي التنزيلات داخل نفس مربع الإصدار */
+    .release-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .release-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .release-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .badge-soft{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      font-size:12.5px;
+      white-space:nowrap;
+    }
+    .badge-soft .muted{ color:var(--muted); }
+    .badge-soft .num{
+      font-weight:800;
+      letter-spacing:.2px;
+      color:var(--text);
+    }
+    .badge-soft .mini-dot{
+      width:8px;height:8px;border-radius:999px;
+      background:rgba(34,197,94,.95);
+      box-shadow:0 0 0 4px rgba(34,197,94,.18);
     }
 
     footer{
@@ -199,11 +244,6 @@
             صفحة رسمية لتنزيل آخر إصدار. زر ذكي يرشّح النسخة المناسبة لجهازك، مع روابط مباشرة لكل المعماريات.
           </div>
 
-          <!-- معلومات الإصدار -->
-          <div class="status" id="releaseInfo" style="margin-top:10px">
-            <span class="muted">الإصدار:</span> جارٍ جلب آخر إصدار…
-          </div>
-
           <!-- زر رجوع للمعرض -->
           <div class="actions" style="margin-top:10px">
             <a class="btn ghost" href="https://abood202.github.io/my-app-site/">رجوع للمعرض</a>
@@ -223,6 +263,26 @@
         <p>
           اضغط على <b>التنزيل الذكي</b> وسيتم ترشيح النسخة الأقرب لجهازك. إذا لم ينجح الكشف، استخدم الروابط اليدوية.
         </p>
+
+        <!-- ✅ مربع الإصدار + إجمالي التنزيلات -->
+        <div class="status" id="releaseInfo" style="margin-top:10px">
+          <div class="release-wrap">
+            <div class="release-left">
+              <span class="muted">الإصدار:</span>
+              <b id="relTag">جارٍ جلب آخر إصدار…</b>
+            </div>
+
+            <div class="release-right">
+              <span class="badge-soft" title="إجمالي تنزيلات ملفات APK داخل آخر Release">
+                <span class="mini-dot" aria-hidden="true"></span>
+                <span class="muted">إجمالي التنزيلات</span>
+                <span class="num" id="totalDownloads">—</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="muted small" id="relNote" style="margin-top:6px; display:none"></div>
+        </div>
 
         <div class="actions">
           <a class="btn primary" href="#" id="smartBtn">
@@ -265,7 +325,10 @@
               <div class="meta">Android 64-bit (ARM)</div>
             </div>
             <div class="right">
-              <span class="dl-pill" id="dlArm64">— تنزيل</span>
+              <span class="dl-badge" title="تنزيلات هذه النسخة">
+                <span class="muted">تنزيلات:</span>
+                <b id="dlArm64">—</b>
+              </span>
               <a class="btn" id="btnArm64" href="#">تنزيل</a>
             </div>
           </li>
@@ -276,7 +339,10 @@
               <div class="meta">Android 32-bit (ARM)</div>
             </div>
             <div class="right">
-              <span class="dl-pill" id="dlV7a">— تنزيل</span>
+              <span class="dl-badge" title="تنزيلات هذه النسخة">
+                <span class="muted">تنزيلات:</span>
+                <b id="dlV7a">—</b>
+              </span>
               <a class="btn" id="btnV7a" href="#">تنزيل</a>
             </div>
           </li>
@@ -287,7 +353,10 @@
               <div class="meta">Android Emulator / Intel</div>
             </div>
             <div class="right">
-              <span class="dl-pill" id="dlX86">— تنزيل</span>
+              <span class="dl-badge" title="تنزيلات هذه النسخة">
+                <span class="muted">تنزيلات:</span>
+                <b id="dlX86">—</b>
+              </span>
               <a class="btn" id="btnX86" href="#">تنزيل</a>
             </div>
           </li>
@@ -330,10 +399,10 @@
   </div>
 
   <script>
-    // إعدادات الريبو (عدّلها إذا غيّرت الحساب/الريبو)
+    // ✅ إعدادات GitHub Repo لجلب أرقام التنزيلات + روابط آخر Release
     const GH = { owner: "abood202", repo: "my-app-site" };
 
-    // (Fallback) لو فشل API لأي سبب
+    // ✅ روابط احتياطية (تُستخدم لو فشل GitHub API)
     const APK = {
       arm64:  "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-arm64-v8a-release.apk",
       v7a:    "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-armeabi-v7a-release.apk",
@@ -422,6 +491,80 @@
       el("btnX86").href   = APK.x86_64;
     }
 
+    function setDownloadsUI(which, count){
+      const n = Number(count) || 0;
+      if(which === "arm64") el("dlArm64").textContent = n.toLocaleString("ar-EG");
+      if(which === "v7a")   el("dlV7a").textContent   = n.toLocaleString("ar-EG");
+      if(which === "x86_64")el("dlX86").textContent   = n.toLocaleString("ar-EG");
+    }
+
+    async function loadLatestRelease(){
+      try{
+        const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/releases/latest`;
+        const res = await fetch(url, { headers: { "Accept": "application/vnd.github+json" } });
+        if(!res.ok) throw new Error("GitHub API error");
+
+        const data = await res.json();
+
+        // ✅ عرض التاغ
+        const tag = data.tag_name || "آخر إصدار";
+        el("relTag").textContent = tag;
+
+        const assets = Array.isArray(data.assets) ? data.assets : [];
+
+        // ✅ إجمالي التنزيلات (مجموع download_count لكل Assets في آخر Release)
+        const total = assets.reduce((sum, a) => sum + (Number(a.download_count) || 0), 0);
+        el("totalDownloads").textContent = total.toLocaleString("ar-EG");
+
+        // ابحث بالاسم داخل Assets
+        const findByName = (needle) =>
+          assets.find(a => (a.name || "").toLowerCase() === needle.toLowerCase());
+
+        const aArm64 = findByName("app-arm64-v8a-release.apk");
+        const aV7a   = findByName("app-armeabi-v7a-release.apk");
+        const aX86   = findByName("app-x86_64-release.apk");
+
+        // لو وجدناها، نحدث الروابط + عدد التنزيلات لكل ملف
+        if (aArm64){
+          APK.arm64 = aArm64.browser_download_url;
+          setDownloadsUI("arm64", aArm64.download_count ?? 0);
+        }
+        if (aV7a){
+          APK.v7a = aV7a.browser_download_url;
+          setDownloadsUI("v7a", aV7a.download_count ?? 0);
+        }
+        if (aX86){
+          APK.x86_64 = aX86.browser_download_url;
+          setDownloadsUI("x86_64", aX86.download_count ?? 0);
+        }
+
+        bindLinks();
+
+        // تنبيه أنيق لو لم يجد بعض الملفات
+        const missing = [];
+        if(!aArm64) missing.push("arm64");
+        if(!aV7a)   missing.push("v7a");
+        if(!aX86)   missing.push("x86_64");
+
+        if(missing.length){
+          const note = el("relNote");
+          note.style.display = "block";
+          note.textContent = `ملاحظة: لم أجد بعض ملفات APK في Assets (${missing.join(", ")}). تم استخدام روابط احتياطية.`;
+        }
+
+      }catch(e){
+        // فشل API: نستخدم روابط fallback ولا نكسر الصفحة
+        el("relTag").textContent = "غير متاح الآن";
+        el("totalDownloads").textContent = "—";
+
+        const note = el("relNote");
+        note.style.display = "block";
+        note.textContent = "تعذّر جلب بيانات GitHub الآن (تم استخدام روابط احتياطية).";
+
+        bindLinks();
+      }
+    }
+
     function smartDownload(e){
       e.preventDefault();
 
@@ -439,72 +582,6 @@
       window.location.href = APK[pick];
     }
 
-    function setDownloadsUI(which, count){
-      const idMap = { arm64:"dlArm64", v7a:"dlV7a", x86_64:"dlX86" };
-      const node = el(idMap[which]);
-      if (!node) return;
-      node.textContent = `${count} تنزيل`;
-    }
-
-    // يجلب آخر Release ويحدّث:
-    // - رقم الإصدار
-    // - روابط الـ APK تلقائياً
-    // - عدّاد التنزيلات لكل Asset
-    async function loadLatestRelease(){
-      try{
-        const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/releases/latest`;
-        const res = await fetch(url, { headers: { "Accept": "application/vnd.github+json" } });
-        if(!res.ok) throw new Error("GitHub API error");
-
-        const data = await res.json();
-        const tag = data.tag_name || "آخر إصدار";
-        el("releaseInfo").innerHTML = `<span class="muted">الإصدار:</span> <b>${tag}</b>`;
-
-        const assets = Array.isArray(data.assets) ? data.assets : [];
-
-        // ابحث بالاسم داخل Assets (عدّل الأسماء هنا لو تغيّرت)
-        const findByName = (needle) =>
-          assets.find(a => (a.name || "").toLowerCase() === needle.toLowerCase());
-
-        const aArm64 = findByName("app-arm64-v8a-release.apk");
-        const aV7a   = findByName("app-armeabi-v7a-release.apk");
-        const aX86   = findByName("app-x86_64-release.apk");
-
-        // لو وجدناها، نحدث الروابط والعدادات من نفس الـ Release
-        if (aArm64){
-          APK.arm64 = aArm64.browser_download_url;
-          setDownloadsUI("arm64", aArm64.download_count ?? 0);
-        }
-        if (aV7a){
-          APK.v7a = aV7a.browser_download_url;
-          setDownloadsUI("v7a", aV7a.download_count ?? 0);
-        }
-        if (aX86){
-          APK.x86_64 = aX86.browser_download_url;
-          setDownloadsUI("x86_64", aX86.download_count ?? 0);
-        }
-
-        bindLinks();
-
-        // لو لم نجد بعض الملفات، نكتب تنبيه بسيط
-        const missing = [];
-        if(!aArm64) missing.push("arm64");
-        if(!aV7a)   missing.push("v7a");
-        if(!aX86)   missing.push("x86_64");
-        if(missing.length){
-          el("releaseInfo").innerHTML +=
-            `<div class="muted small" style="margin-top:6px">
-              ملاحظة: لم أجد بعض الملفات داخل Assets (${missing.join(", ")}). تم استخدام روابط احتياطية.
-            </div>`;
-        }
-
-      }catch(e){
-        // فشل API: نستخدم روابط fallback ولا نكسر الصفحة
-        el("releaseInfo").innerHTML = `<span class="muted">الإصدار:</span> لم يتم جلب بيانات GitHub الآن (تم استخدام روابط احتياطية).`;
-        bindLinks();
-      }
-    }
-
     // تشغيل
     setEnvPill();
     fillDeviceInfo();
@@ -512,7 +589,7 @@
 
     el("smartBtn").addEventListener("click", smartDownload);
 
-    // تحميل بيانات آخر Release/التحميلات
+    // ✅ جلب أحدث إصدار + عدد التنزيلات
     loadLatestRelease();
   </script>
 </body>
