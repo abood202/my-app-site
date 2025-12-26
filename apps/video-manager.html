@@ -172,7 +172,7 @@
       white-space:nowrap;
     }
     .badge-soft .muted{ color:var(--muted); }
-    .badge-soft .num{font-weight:800;letter-spacing:.2px;color:var(--text);}
+    .badge-soft .num{font-weight:800;letter-spacing:.2px;color:var(--text);font-variant-numeric:tabular-nums;}
     .badge-soft .mini-dot{
       width:8px;height:8px;border-radius:999px;
       background:rgba(34,197,94,.95);
@@ -221,7 +221,7 @@
             </div>
 
             <div class="release-right">
-              <span class="badge-soft" title="إجمالي تنزيلات ملفات APK">
+              <span class="badge-soft" title="إجمالي تنزيلات ملفات APK (مُحدّثة بواسطة GitHub Actions)">
                 <span class="mini-dot" aria-hidden="true"></span>
                 <span class="muted">إجمالي التنزيلات</span>
                 <span class="num" id="totalDownloads">—</span>
@@ -273,7 +273,9 @@
               <div class="meta">Android 64-bit (ARM)</div>
             </div>
             <div class="right">
-              <span class="dl-badge" title="تنزيلات هذه النسخة"><span class="muted">تنزيلات:</span><b id="dlArm64">—</b></span>
+              <span class="dl-badge" title="تنزيلات هذه النسخة (مُحدّثة بواسطة GitHub Actions)">
+                <span class="muted">تنزيلات:</span><b id="dlArm64">—</b>
+              </span>
               <a class="btn" id="btnArm64" href="#">تنزيل</a>
             </div>
           </li>
@@ -284,7 +286,9 @@
               <div class="meta">Android 32-bit (ARM)</div>
             </div>
             <div class="right">
-              <span class="dl-badge" title="تنزيلات هذه النسخة"><span class="muted">تنزيلات:</span><b id="dlV7a">—</b></span>
+              <span class="dl-badge" title="تنزيلات هذه النسخة (مُحدّثة بواسطة GitHub Actions)">
+                <span class="muted">تنزيلات:</span><b id="dlV7a">—</b>
+              </span>
               <a class="btn" id="btnV7a" href="#">تنزيل</a>
             </div>
           </li>
@@ -295,7 +299,9 @@
               <div class="meta">Android Emulator / Intel</div>
             </div>
             <div class="right">
-              <span class="dl-badge" title="تنزيلات هذه النسخة"><span class="muted">تنزيلات:</span><b id="dlX86">—</b></span>
+              <span class="dl-badge" title="تنزيلات هذه النسخة (مُحدّثة بواسطة GitHub Actions)">
+                <span class="muted">تنزيلات:</span><b id="dlX86">—</b>
+              </span>
               <a class="btn" id="btnX86" href="#">تنزيل</a>
             </div>
           </li>
@@ -327,7 +333,14 @@
   </div>
 
   <script>
-    // روابط احتياطية (تعمل دائمًا)
+    // ✅ أسماء الـ APK داخل Release (يجب تطابق الأسماء حرفياً)
+    const APK_ASSET_NAMES = {
+      arm64: "app-arm64-v8a-release.apk",
+      v7a:   "app-armeabi-v7a-release.apk",
+      x86_64:"app-x86_64-release.apk",
+    };
+
+    // ✅ روابط احتياطية (تعمل دائمًا حتى لو ملف الإحصائيات غير موجود)
     const APK = {
       arm64:  "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-arm64-v8a-release.apk",
       v7a:    "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-armeabi-v7a-release.apk",
@@ -405,52 +418,80 @@
       if(which === "x86_64")el("dlX86").textContent   = txt;
     }
 
+    function setReleaseNote(text){
+      const note = el("relNote");
+      if(!note) return;
+      note.style.display = "block";
+      note.textContent = text;
+    }
+
+    function fmtUpdatedAt(iso){
+      try{
+        // نخليها Cairo تلقائياً عند المستخدم، ولو فشل نطبعها كنص
+        return new Date(iso).toLocaleString("ar-EG");
+      }catch{
+        return String(iso || "");
+      }
+    }
+
     async function loadStatsFromJson(){
-      // الملف الثابت الذي سيحدثه GitHub Actions داخل موقعك
-      // ضع هذا الملف في: /data/video-manager.json
+      // ✅ ثابت: GitHub Actions يولّد هذا الملف داخل موقعك
+      // المسار الصحيح لأن الصفحة داخل /apps:
       const url = "../data/video-manager.json";
 
       try{
         const res = await fetch(url, { cache: "no-store" });
-        if(!res.ok) throw new Error("stats json not found");
+        if(!res.ok) throw new Error("stats json not found: " + res.status);
 
         const data = await res.json();
 
-        el("relTag").textContent = data.tag || "—";
-        el("totalDownloads").textContent = (Number(data.total_apk_downloads)||0).toLocaleString("ar-EG");
+        // حماية من بنية خاطئة
+        const tag = data?.tag ?? "—";
+        const total = Number(data?.total_apk_downloads ?? data?.total ?? 0);
 
-        const a = data.assets || {};
+        el("relTag").textContent = tag;
+        el("totalDownloads").textContent = total.toLocaleString("ar-EG");
 
-        // حدّث الروابط + أعداد كل نسخة
-        const arm64Name = "app-arm64-v8a-release.apk";
-        const v7aName   = "app-armeabi-v7a-release.apk";
-        const x86Name   = "app-x86_64-release.apk";
+        const assets = data?.assets || {};
 
-        if (a[arm64Name]?.url) APK.arm64 = a[arm64Name].url;
-        if (a[v7aName]?.url)   APK.v7a   = a[v7aName].url;
-        if (a[x86Name]?.url)   APK.x86_64= a[x86Name].url;
+        const aArm64 = assets[APK_ASSET_NAMES.arm64];
+        const aV7a   = assets[APK_ASSET_NAMES.v7a];
+        const aX86   = assets[APK_ASSET_NAMES.x86_64];
 
-        setDownloadsUI("arm64", a[arm64Name]?.count ?? 0);
-        setDownloadsUI("v7a",   a[v7aName]?.count ?? 0);
-        setDownloadsUI("x86_64",a[x86Name]?.count ?? 0);
+        if (aArm64?.url) APK.arm64 = aArm64.url;
+        if (aV7a?.url)   APK.v7a   = aV7a.url;
+        if (aX86?.url)   APK.x86_64= aX86.url;
+
+        setDownloadsUI("arm64", aArm64?.count ?? 0);
+        setDownloadsUI("v7a",   aV7a?.count ?? 0);
+        setDownloadsUI("x86_64",aX86?.count ?? 0);
 
         bindLinks();
 
-        const note = el("relNote");
-        if (data.updated_at){
-          note.style.display = "block";
-          note.textContent = `آخر تحديث للإحصائيات: ${new Date(data.updated_at).toLocaleString("ar-EG")}`;
+        // ملاحظة التحديث + تحذير لو الأسماء لا تطابق
+        const missing = [];
+        if (!aArm64) missing.push("arm64");
+        if (!aV7a)   missing.push("v7a");
+        if (!aX86)   missing.push("x86_64");
+
+        const updatedAt = data?.updated_at ? `آخر تحديث للإحصائيات: ${fmtUpdatedAt(data.updated_at)}` : "";
+        if (missing.length){
+          setReleaseNote(`${updatedAt}${updatedAt ? " • " : ""}لم يتم العثور على بعض ملفات الـ APK داخل JSON (${missing.join(", ")}). تأكد من تطابق أسماء الملفات في الـ Release.`);
+        } else if (updatedAt){
+          setReleaseNote(updatedAt);
         }
 
       }catch(e){
-        // لو ملف الإحصائيات غير موجود بعد، لا نكسر الصفحة
+        // لو ملف الإحصائيات غير موجود/غير متاح: لا نكسر الصفحة
         el("relTag").textContent = "—";
         el("totalDownloads").textContent = "—";
+        setDownloadsUI("arm64", 0);
+        setDownloadsUI("v7a", 0);
+        setDownloadsUI("x86_64", 0);
         bindLinks();
 
-        const note = el("relNote");
-        note.style.display = "block";
-        note.textContent = "لم يتم العثور على ملف الإحصائيات بعد. تأكد أن GitHub Action يولّد data/video-manager.json.";
+        setReleaseNote("لم يتم العثور على ملف الإحصائيات بعد. تأكد أن GitHub Action يولّد data/video-manager.json وأن GitHub Pages ينشر مجلد data.");
+        console.warn(e);
       }
     }
 
@@ -476,7 +517,7 @@
     bindLinks();
     el("smartBtn").addEventListener("click", smartDownload);
 
-    // بدون API: اقرأ الإحصائيات من JSON ثابت
+    // ✅ بدون GitHub API: اقرأ الإحصائيات من JSON ثابت
     loadStatsFromJson();
   </script>
 </body>
