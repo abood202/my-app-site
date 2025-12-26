@@ -1,0 +1,66 @@
+name: Update download counts
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # كل ساعة (UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Fetch latest release + write json files
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+
+          DATA=$(curl -sS \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/abood202/my-app-site/releases/latest)
+
+          TAG=$(echo "$DATA" | jq -r '.tag_name // "unknown"')
+          TOTAL_APK=$(echo "$DATA" | jq '[.assets[] | select(.name | endswith(".apk")) | (.download_count // 0)] | add // 0')
+          ASSETS_JSON=$(echo "$DATA" | jq '
+            .assets
+            | map(select(.name | endswith(".apk")))
+            | map({key: .name, value: {count: (.download_count // 0), url: .browser_download_url}})
+            | from_entries
+          ')
+
+          mkdir -p data
+
+          cat > data/video-manager.json <<EOF
+          {
+            "tag": "$TAG",
+            "total_apk_downloads": $TOTAL_APK,
+            "assets": $ASSETS_JSON,
+            "updated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          }
+          EOF
+
+          cat > data/downloads.json <<EOF
+          {
+            "video-manager": {
+              "tag": "$TAG",
+              "total_apk_downloads": $TOTAL_APK,
+              "updated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            }
+          }
+          EOF
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/video-manager.json data/downloads.json
+          git commit -m "Update download counts" || exit 0
+          git push
