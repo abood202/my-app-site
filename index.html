@@ -125,7 +125,7 @@
       gap:8px;
     }
 
-    /* ====== Downloads pill (جميل + رقم ثابت العرض) ====== */
+    /* ====== Downloads pill ====== */
     .pill .num{
       color:var(--text);
       font-weight:800;
@@ -210,10 +210,10 @@
             <div>
               <p class="name">مدير الفيديوهات</p>
               <div class="desc">
-                  انسخ الرابط والصقه، اختر الجودة، واترك التطبيق يتولى الباقي.
+                انسخ الرابط والصقه، اختر الجودة، واترك التطبيق يتولى الباقي.
                 <br>
-                  يدعم تنزيل فيديوهات وShorts وقوائم تشغيل، مع تحميل متوازي لفيديو أو اثنين لتوفير الوقت.
-                </div>
+                يدعم تنزيل فيديوهات وShorts وقوائم تشغيل، مع تحميل متوازي لفيديو أو اثنين لتوفير الوقت.
+              </div>
             </div>
           </div>
 
@@ -222,9 +222,10 @@
             <span class="pill">Smart Download</span>
             <span class="pill">Issues</span>
 
-            <!-- ✅ إجمالي التنزيلات الحقيقي -->
-            <span class="pill" id="vmDownloads" title="إجمالي تنزيلات ملفات APK من GitHub Releases">
-              Downloads: <span class="spinner" aria-hidden="true"></span>
+            <!-- ✅ إجمالي التنزيلات (من ملف JSON داخل الموقع) -->
+            <span class="pill" id="vmDownloads" title="إجمالي تنزيلات ملفات APK">
+              Downloads:
+              <span class="spinner" aria-hidden="true"></span>
               <span class="num" id="vmDownloadsNum" style="display:none">—</span>
             </span>
           </div>
@@ -287,18 +288,6 @@
   </div>
 
   <script>
-    // ========= إعدادات GitHub (ريبو الموقع نفسه) =========
-    const GH = {
-      owner: "abood202",
-      repo: "my-app-site",
-      // أسماء ملفات APK داخل Release assets (عدّلها إذا كانت مختلفة)
-      assets: [
-        "app-arm64-v8a-release.apk",
-        "app-armeabi-v7a-release.apk",
-        "app-x86_64-release.apk"
-      ]
-    };
-
     const $ = (id) => document.getElementById(id);
 
     function formatNumber(n){
@@ -311,48 +300,29 @@
       const num  = $("vmDownloadsNum");
       if (!pill || !num) return;
 
-      const api = `https://api.github.com/repos/${GH.owner}/${GH.repo}/releases/latest`;
-
       try{
-        const res = await fetch(api, {
-          headers: { "Accept": "application/vnd.github+json" }
-        });
-
-        if (!res.ok) throw new Error("GitHub API error: " + res.status);
+        // ✅ ملف ثابت داخل GitHub Pages (يتم تحديثه عبر GitHub Actions)
+        const res = await fetch("data/downloads.json?ts=" + Date.now());
+        if (!res.ok) throw new Error("downloads.json error: " + res.status);
 
         const data = await res.json();
-        const assets = Array.isArray(data.assets) ? data.assets : [];
+        const vm = data["video-manager"];
 
-        // اجمع download_count للـ APKs المطلوبة فقط
-        let total = 0;
-        for (const a of assets){
-          if (GH.assets.includes(a.name)) total += (a.download_count || 0);
-        }
+        const total = Number(vm?.total ?? 0);
+        const tag   = String(vm?.tag ?? "");
+        const upd   = String(vm?.updated_at ?? "");
 
-        // إن لم يجد الأسماء، اجمع كل apk (fallback)
-        if (total === 0){
-          for (const a of assets){
-            if (String(a.name || "").toLowerCase().endsWith(".apk")) total += (a.download_count || 0);
-          }
-        }
-
-        // عرض النتيجة
         pill.querySelector(".spinner")?.remove();
         num.style.display = "inline";
         num.textContent = formatNumber(total);
 
-        // Tooltip لطيف
-        const tag = data.tag_name ? ` • ${data.tag_name}` : "";
-        pill.title = `إجمالي تنزيلات ملفات APK من GitHub Releases${tag}`;
+        pill.title = `إجمالي تنزيلات APK${tag ? " • " + tag : ""}${upd ? " • Updated: " + upd : ""}`;
 
       }catch(err){
-        // فشل API: اعرض — بشكل محترم
         pill.querySelector(".spinner")?.remove();
         num.style.display = "inline";
         num.textContent = "—";
-        pill.title = "تعذّر جلب عدد التنزيلات حالياً (GitHub API).";
-        // اختياري: لو تريد تخفيها عند الفشل بدل —
-        // pill.style.display = "none";
+        pill.title = "تعذّر جلب عدد التنزيلات حالياً.";
         console.warn(err);
       }
     }
