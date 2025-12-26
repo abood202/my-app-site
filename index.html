@@ -125,7 +125,6 @@
       gap:8px;
     }
 
-    /* ====== Downloads pill ====== */
     .pill .num{
       color:var(--text);
       font-weight:800;
@@ -141,7 +140,6 @@
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ====== Footer + Social ====== */
     footer{
       margin:18px 0 12px;
       color:var(--muted);
@@ -222,7 +220,6 @@
             <span class="pill">Smart Download</span>
             <span class="pill">Issues</span>
 
-            <!-- ✅ إجمالي التنزيلات (من ملف JSON داخل الموقع) -->
             <span class="pill" id="vmDownloads" title="إجمالي تنزيلات ملفات APK">
               Downloads:
               <span class="spinner" aria-hidden="true"></span>
@@ -295,35 +292,58 @@
       catch { return String(n); }
     }
 
+    async function tryFetchJson(url){
+      const res = await fetch(url, { cache: "no-store" });
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    }
+
     async function loadVideoManagerDownloads(){
       const pill = $("vmDownloads");
       const num  = $("vmDownloadsNum");
       if (!pill || !num) return;
 
+      const spinner = pill.querySelector(".spinner");
+
       try{
-        // ✅ ملف ثابت داخل GitHub Pages (يتم تحديثه عبر GitHub Actions)
-        const res = await fetch("data/downloads.json?ts=" + Date.now());
-        if (!res.ok) throw new Error("downloads.json error: " + res.status);
+        // 1) الشكل المجمّع: /data/downloads.json
+        const a = await tryFetchJson("data/downloads.json?ts=" + Date.now());
+        const vm = a?.["video-manager"];
 
-        const data = await res.json();
-        const vm = data["video-manager"];
+        if (vm && (vm.total !== undefined || vm.total_apk_downloads !== undefined)){
+          const total = Number(vm.total ?? vm.total_apk_downloads ?? 0);
+          spinner?.remove();
+          num.style.display = "inline";
+          num.textContent = formatNumber(total);
 
-        const total = Number(vm?.total ?? 0);
-        const tag   = String(vm?.tag ?? "");
-        const upd   = String(vm?.updated_at ?? "");
+          const tag = vm.tag ? ` • ${vm.tag}` : "";
+          const upd = vm.updated_at ? ` • Updated: ${vm.updated_at}` : "";
+          pill.title = `إجمالي تنزيلات APK${tag}${upd}`;
+          return;
+        }
 
-        pill.querySelector(".spinner")?.remove();
-        num.style.display = "inline";
-        num.textContent = formatNumber(total);
+        throw new Error("downloads.json structure mismatch");
+      }catch(_e1){
+        try{
+          // 2) الشكل الخاص بالتطبيق: /data/video-manager.json
+          const b = await tryFetchJson("data/video-manager.json?ts=" + Date.now());
+          const total = Number(b.total_apk_downloads ?? b.total ?? 0);
 
-        pill.title = `إجمالي تنزيلات APK${tag ? " • " + tag : ""}${upd ? " • Updated: " + upd : ""}`;
+          spinner?.remove();
+          num.style.display = "inline";
+          num.textContent = formatNumber(total);
 
-      }catch(err){
-        pill.querySelector(".spinner")?.remove();
-        num.style.display = "inline";
-        num.textContent = "—";
-        pill.title = "تعذّر جلب عدد التنزيلات حالياً.";
-        console.warn(err);
+          const tag = b.tag ? ` • ${b.tag}` : "";
+          const upd = b.updated_at ? ` • Updated: ${b.updated_at}` : "";
+          pill.title = `إجمالي تنزيلات APK${tag}${upd}`;
+          return;
+        }catch(err){
+          spinner?.remove();
+          num.style.display = "inline";
+          num.textContent = "—";
+          pill.title = "تعذّر جلب عدد التنزيلات حالياً. تأكد من وجود data/downloads.json أو data/video-manager.json على GitHub Pages.";
+          console.warn(err);
+        }
       }
     }
 
