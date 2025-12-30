@@ -1,6 +1,6 @@
 {
   "tag": "v1.0.0",
-  "total_apk_downloads": 17,
+  "total_apk_downloads": 18,
   "assets": {
   "app-arm64-v8a-release.apk": {
     "count": 7,
@@ -11,9 +11,9 @@
     "url": "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-armeabi-v7a-release.apk"
   },
   "app-x86_64-release.apk": {
-    "count": 5,
+    "count": 6,
     "url": "https://github.com/abood202/my-app-site/releases/download/v1.0.0/app-x86_64-release.apk"
   }
 },
-  "updated_at": "2025-12-30T11:21:36Z"
+  "updated_at": "2025-12-30T12:50:34Z"
 }
